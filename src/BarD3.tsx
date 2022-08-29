@@ -122,6 +122,8 @@ export default function BarD3(props: BarD3Props) {
       .selectAll(".rectItem")
       .append("text")
       .text((d: any) => d)
+      .attr("fill", "gray")
+      .attr("font-weight", "bold")
       .attr("x", 20)
       .attr("y", (d, i) => {
         return calcY(d, i) + (heightRect + 2 * padding) / 2;
@@ -132,20 +134,27 @@ export default function BarD3(props: BarD3Props) {
       .attr("width", (d) => widthScale(d))
       .duration(1000);
     rect.on("mouseenter", function () {
-      //d3.select(this).node().parentNode
-      d3.select(this).transition().duration(300).attr("fill", "red");
-      //d3.select(this).select("text").attr("fill", "white");
-
-      //d3.select(this.parentNode)
-      console.log(d3.select(this).node().parentNode);
-
-      /* const parent = child.select(function() {
-        return this.closest(".parent");  // Get the closest parent matching the selector string.
-      }); */
+      d3.select(this)
+        .transition()
+        .duration(300)
+        .attr("fill", "red")
+        .attr("stroke-width", "2")
+        .attr("stroke", "black");
+      const parentGroup = d3.select(this).node().parentNode;
+      parentGroup.querySelector("text").setAttribute("fill", "white");
     });
     rect.on("mouseleave", function () {
-      d3.select(this).transition().duration(300).attr("fill", "blue");
+      d3.select(this)
+        .transition()
+        .duration(300)
+        .attr("fill", "blue")
+        .attr("stroke-width", "0")
+        .attr("stroke", "none");
+      const parentGroup = d3.select(this).node().parentNode;
+      parentGroup.querySelector("text").setAttribute("fill", "gray");
+      //stroke="black" stroke-width="0.5
     });
+    rect.on();
     //console.log("data", data);
 
     //console.log("isExistClass", d3Root.select("MyChart").node());
