@@ -1,8 +1,8 @@
 import React, { useEffect, createRef } from "react";
-import { styled } from "@superset-ui/core";
+import { callApi, styled } from "@superset-ui/core";
 import { BarD3Props, BarD3StylesProps } from "./types";
 import * as d3 from "d3";
-import { schemeSet3, transition } from "d3";
+import { schemeSet3, selectAll, transition } from "d3";
 
 // The following Styles component is a <div> element, which has been styled using Emotion
 // For docs, visit https://emotion.sh/docs/styled
@@ -13,7 +13,7 @@ import { schemeSet3, transition } from "d3";
 
 const Styles = styled.div<BarD3StylesProps>`
   //background-color: ${({ theme }) => theme.colors.secondary.light2};
-  padding: ${({ theme }) => theme.gridUnit * 4}px;
+  //padding: ${({ theme }) => theme.gridUnit * 4}px;
   border-radius: ${({ theme }) => theme.gridUnit * 2}px;
   height: ${({ height }) => height}px;
   width: ${({ width }) => width}px;
@@ -45,7 +45,7 @@ const Styles = styled.div<BarD3StylesProps>`
 export default function BarD3(props: BarD3Props) {
   // height and width are the height and width of the DOM element as it exists in the dashboard.
   // There is also a `data` prop, which is, of course, your DATA 🎉
-  const { /* data, */ height, width } = props;
+  const { data, height, width, cols, metrics } = props;
 
   const rootElem = createRef<HTMLDivElement>();
   // Often, you just want to get a hold of the DOM and go nuts.
@@ -53,58 +53,89 @@ export default function BarD3(props: BarD3Props) {
   useEffect(() => {
     const root = rootElem.current as HTMLElement;
     console.log("Plugin element", root);
-
     const element = d3.select(root);
+    const metrica = metrics[0];
+    const colName = cols[0];
 
-    /*   "year": 1988,
-    "count": 15
-  },
-  {
-    "year": 1995,
-    "count": 219
-  },
-  {
-    "year": 1992,
-    "count": 43
-  },
-  {
-    "year": null,
-    "count": 271
-  },
-  {
-    "year": 2008,
-    "count": 1428 */
+    const dataGrouped = d3.group(
+      data,
+      //(d) => d.year,
+      (d) => d[colName]
+    );
 
-    const dataArray = [20, 15, 35, 20, 55, 5, 19, 40, 50, 60];
-    //const width = 500;
-    //const height = 500;
+    let Y = [];
+    let dataArray = [];
+    //console.log("dataGrouped ", dataGrouped);
+
+    dataGrouped.forEach((value, key) => {
+      Y.push(key);
+      dataArray.push(value[0][metrica]);
+    });
+    console.log("dataArray", dataArray);
+    console.log("Y", Y);
+
+    const maximumInDateArray = d3.max(dataArray);
     const padding = 5;
-    const widthScale = d3.scaleLinear([0, 60], [0, width]);
-    const color = d3.scaleLinear([0, 60], ["blue", "red"]);
+    const paddingLeft = 40;
+    const heightChart = height - padding * 5;
+    const widthScale = d3.scaleLinear([0, maximumInDateArray], [0, width]);
+    const heightRect = heightChart / dataArray.length - padding;
+    //const color = d3.scaleLinear([0, maximumInDateArray], ["blue", "red"]);
 
-    /* const svg2 = element.select("MyChart").node()
-      ? element.select("svg")
-      : element.append("svg").attr("width", 50).attr("height", 50); */
+    function calcY(d: any, i: number) {
+      return Math.floor(heightChart / dataArray.length) * i;
+    }
 
     if (element.select(".MyChart")) {
       element.select(".MyChart").remove();
     }
+    const xAxis = d3.axisBottom(widthScale).ticks(10);
+    const yAxis = d3.axisLeft(d3.scaleLinear(Y, [heightChart, 0]));
 
     const canvas = element
       .append("svg")
       .attr("width", width)
       .attr("height", height)
-      .attr("class", "MyChart")
+      .attr("class", "MyChart");
+
+    //.attr("transform", "translate(0," + height + ")")
+
+    const rectGroup = canvas
       .append("g")
-      .attr("transform", "translate(20,0)");
+      .attr("class", "rectGroup")
+      .attr("height", heightChart)
+      .attr("transform", "translate(" + paddingLeft + ", 0)");
 
-    function calcY(d: any, i: number) {
-      return Math.floor(height / dataArray.length) * i;
-    }
+    canvas
+      .append("g")
+      .attr("class", "Xaxis")
+      .attr(
+        "transform",
+        "translate(" + paddingLeft + "," + (heightChart - 5) + ")"
+      )
+      .call(xAxis);
 
-    const heightRect = height / dataArray.length - padding;
+    const yAxisGroup = canvas // группа элементов оси У
+      .append("g")
+      .attr("class", "Yaxis")
+      .attr("transform", "translate(" + paddingLeft + ",-5)");
 
-    const rect = canvas
+    //yAxisGroup.call(yAxis);
+
+    yAxisGroup //подписи по оси У
+      .selectAll("text")
+      .data(Y)
+      .enter()
+      .append("text")
+      .attr("x", "-" + paddingLeft)
+      .attr("y", (d, i) => {
+        return calcY(d, i) + 19;
+      })
+      .text((d, i) => {
+        return d;
+      });
+
+    const rect = rectGroup
       .selectAll("rect")
       .data(dataArray)
       .enter()
@@ -118,54 +149,36 @@ export default function BarD3(props: BarD3Props) {
         return calcY(d, i);
       });
 
-    const text = canvas
+    const text = rectGroup
       .selectAll(".rectItem")
       .append("text")
       .text((d: any) => d)
       .attr("fill", "gray")
       .attr("font-weight", "bold")
-      .attr("x", 20)
+      .attr("x", (d: any) => widthScale(d) + 2)
       .attr("y", (d, i) => {
         return calcY(d, i) + (heightRect + 2 * padding) / 2;
       });
 
+    // animation
     rect
       .transition()
-      .attr("width", (d) => widthScale(d))
+      .attr("width", (d: any) => widthScale(d))
       .duration(1000);
     rect.on("mouseenter", function () {
-      d3.select(this)
-        .transition()
-        .duration(300)
-        .attr("fill", "red")
-        .attr("stroke-width", "2")
-        .attr("stroke", "black");
+      d3.select(this).transition().duration(300).attr("fill", "red");
       const parentGroup = d3.select(this).node().parentNode;
-      parentGroup.querySelector("text").setAttribute("fill", "white");
+      parentGroup.querySelector("text").setAttribute("fill", "black");
     });
     rect.on("mouseleave", function () {
-      d3.select(this)
-        .transition()
-        .duration(300)
-        .attr("fill", "blue")
-        .attr("stroke-width", "0")
-        .attr("stroke", "none");
+      d3.select(this).transition().duration(300).attr("fill", "blue");
       const parentGroup = d3.select(this).node().parentNode;
       parentGroup.querySelector("text").setAttribute("fill", "gray");
       //stroke="black" stroke-width="0.5
     });
-    rect.on();
-    //console.log("data", data);
-
-    //console.log("isExistClass", d3Root.select("MyChart").node());
-    /* const svg2 = element.select("MyChart").node()
-      ? element.select("svg")
-      : element.append("svg").attr("width", 50).attr("height", 50); */
   });
 
   console.log("Plugin props", props);
-
-  //const el = d3.select("div.test").append("h3").text("hello");
 
   return (
     <Styles

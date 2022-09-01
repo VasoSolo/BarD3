@@ -18,5 +18,7 @@ export type BarD3QueryFormData = QueryFormData &
 export type BarD3Props = BarD3StylesProps &
   BarD3CustomizeProps & {
     data: TimeseriesDataRecord[];
+    cols: string[];
+    metrics: string[];
     // add typing here for the props you pass in from transformProps.ts!
   };
