@@ -50,10 +50,7 @@ export default function BarD3(props: BarD3Props) {
   const rootElem = createRef<HTMLDivElement>();
   // Often, you just want to get a hold of the DOM and go nuts.
   // Here, you can do that with createRef, and the useEffect hook.
-  useEffect(() => {
-    const root = rootElem.current as HTMLElement;
-    console.log("Plugin element", root);
-    const element = d3.select(root);
+  function createChart(element) {
     const metrica = metrics[0];
     const colName = cols[0];
 
@@ -62,11 +59,8 @@ export default function BarD3(props: BarD3Props) {
       //(d) => d.year,
       (d) => d[colName]
     );
-
     let Y = [];
     let dataArray = [];
-    //console.log("dataGrouped ", dataGrouped);
-
     dataGrouped.forEach((value, key) => {
       Y.push(key);
       dataArray.push(value[0][metrica]);
@@ -75,11 +69,20 @@ export default function BarD3(props: BarD3Props) {
     console.log("Y", Y);
 
     const maximumInDateArray = d3.max(dataArray);
-    const padding = 5;
+    //const padding = 5;
     const paddingLeft = 40;
-    const heightChart = height - padding * 5;
-    const widthScale = d3.scaleLinear([0, maximumInDateArray], [0, width]);
+    const paddingRight = 40;
+    const paddingBottom = 40;
+    const heightChart = height - paddingBottom;
+    const widthChart = width - paddingLeft;
+    const paddingScale = d3.scaleLinear([0, heightChart], [0, 20]);
+    const padding = paddingScale(heightChart / dataArray.length);
     const heightRect = heightChart / dataArray.length - padding;
+    const widthScale = d3.scaleLinear(
+      [0, maximumInDateArray],
+      [0, widthChart - paddingRight]
+    );
+    const heightScale = d3.scaleLinear([0, dataArray.length], [0, heightChart]);
     //const color = d3.scaleLinear([0, maximumInDateArray], ["blue", "red"]);
 
     function calcY(d: any, i: number) {
@@ -90,7 +93,6 @@ export default function BarD3(props: BarD3Props) {
       element.select(".MyChart").remove();
     }
     const xAxis = d3.axisBottom(widthScale).ticks(10);
-    const yAxis = d3.axisLeft(d3.scaleLinear(Y, [heightChart, 0]));
 
     const canvas = element
       .append("svg")
@@ -104,21 +106,24 @@ export default function BarD3(props: BarD3Props) {
       .append("g")
       .attr("class", "rectGroup")
       .attr("height", heightChart)
-      .attr("transform", "translate(" + paddingLeft + ", 0)");
+      .attr("width", widthChart);
+    //.attr("transform", "translate(" + paddingLeft + ", 0)");
 
-    canvas
+    const xAxisGroup = canvas
       .append("g")
       .attr("class", "Xaxis")
-      .attr(
-        "transform",
-        "translate(" + paddingLeft + "," + (heightChart - 5) + ")"
-      )
-      .call(xAxis);
+      .attr("transform", "translate(0, " + heightChart + ")");
+    //.attr(
+    //  "transform",
+    //  "translate(" + paddingLeft + "," + heightChart /* - 5 */ + ")"
+    //)
+
+    xAxisGroup.call(xAxis);
 
     const yAxisGroup = canvas // группа элементов оси У
       .append("g")
-      .attr("class", "Yaxis")
-      .attr("transform", "translate(" + paddingLeft + ",-5)");
+      .attr("class", "Yaxis");
+    //.attr("transform", "translate(" + paddingLeft + ", 0 )"); //-5
 
     //yAxisGroup.call(yAxis);
 
@@ -128,12 +133,19 @@ export default function BarD3(props: BarD3Props) {
       .enter()
       .append("text")
       .attr("x", "-" + paddingLeft)
-      .attr("y", (d, i) => {
-        return calcY(d, i) + 19;
+      .attr("y", (d: any, i: number) => {
+        return heightScale(i) + (heightRect + 2 * padding) / 2;
       })
-      .text((d, i) => {
-        return d;
-      });
+      .text((d, i: number) => d);
+
+    rectGroup
+      .append("line")
+      .attr("x1", 0)
+      .attr("y1", 0)
+      .attr("x2", 0)
+      .attr("y2", heightChart)
+      .attr("stroke-width", 1)
+      .attr("stroke", "black");
 
     const rect = rectGroup
       .selectAll("rect")
@@ -146,7 +158,9 @@ export default function BarD3(props: BarD3Props) {
       .attr("width", 0)
       .attr("height", heightRect)
       .attr("y", (d, i) => {
-        return calcY(d, i);
+        console.log("heightScale(i)", i, heightScale(i));
+        //return calcY(d, i);
+        return heightScale(i);
       });
 
     const text = rectGroup
@@ -157,7 +171,7 @@ export default function BarD3(props: BarD3Props) {
       .attr("font-weight", "bold")
       .attr("x", (d: any) => widthScale(d) + 2)
       .attr("y", (d, i) => {
-        return calcY(d, i) + (heightRect + 2 * padding) / 2;
+        return heightScale(i) + (heightRect + 2 * padding) / 2;
       });
 
     // animation
@@ -176,7 +190,14 @@ export default function BarD3(props: BarD3Props) {
       parentGroup.querySelector("text").setAttribute("fill", "gray");
       //stroke="black" stroke-width="0.5
     });
-  });
+  }
+
+  useEffect(() => {
+    const root = rootElem.current as HTMLElement;
+    console.log("Plugin element", root);
+    const element = d3.select(root);
+    createChart(element);
+  }, [data]);
 
   console.log("Plugin props", props);
 
