@@ -1,3 +1,4 @@
+//import { ColorSchemeConfig } from '@superset-ui/core/lib/color/ColorScheme';
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -49,11 +50,33 @@ export default function transformProps(chartProps: ChartProps) {
    * be seen until restarting the development server.
    */
   const { width, height, formData, queriesData} = chartProps;
-  const { boldText, headerFontSize, headerText,cols,metrics } = formData;
+  const { boldText, headerFontSize, headerText,cols,metrics,hoverColor,
+    labelColor,
+    limitColor,
+    labelPosition,
+    labelForStackedPosition,
+    labelFontSize,
+    xAxisFontSize,
+    yAxisFontSize,
+    xLimitLine,
+    paddingForChart,
+    paddingRight,
+    paddingLeft,
+    paddingTop,
+    paddingBottom,
+    paddingInfoLabel,
+    orientation,
+    visualGroupMode,
+    colorScheme,
+    sliceID,
+    legendX,
+    legendY,
+    paddingStackedGroup,
+    paddingStackedGroupLevelTwo, } = formData;
   const data = queriesData[0].data as TimeseriesDataRecord[];
 
   console.log('formData via TransformProps.ts', formData);
-
+  console.log("colorScheme in TransformProps.ts",colorScheme)
   return {
     width,
     height,
@@ -63,6 +86,29 @@ export default function transformProps(chartProps: ChartProps) {
     headerFontSize,
     headerText,
     cols,
-    metrics
+    metrics,
+    hoverColor,
+    labelColor,
+    limitColor,
+    labelPosition,
+    labelForStackedPosition,
+    labelFontSize,
+    xAxisFontSize,
+    yAxisFontSize,
+    xLimitLine,
+    paddingForChart,
+    paddingRight,
+    paddingLeft,
+    paddingTop,
+    paddingBottom,
+    paddingInfoLabel,
+    orientation,
+    visualGroupMode,
+    colorScheme,
+    sliceID,
+    legendX,
+    legendY,
+    paddingStackedGroup,
+    paddingStackedGroupLevelTwo,
   };
 }
