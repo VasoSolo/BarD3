@@ -66,6 +66,8 @@ export default function BarD3(props: BarD3Props) {
     paddingInfoLabel = 10,
     legendX = width - 40,
     legendY = 5,
+    legendIsVisible = true,
+    sorting = "ascending",
     orientation,
     visualGroupMode,
     colorScheme,
@@ -74,6 +76,10 @@ export default function BarD3(props: BarD3Props) {
   //const rootElem = createRef();
   function createChart(element) {
     //const colorSets = [];
+
+    data.sort((a: any, b: any) => {
+      return sorting === "ascending" ? a.count - b.count : b.count - a.count;
+    });
 
     let groupMode = false;
 
@@ -312,40 +318,40 @@ export default function BarD3(props: BarD3Props) {
       .attr("style", "padding-top: " + paddingTop + "px");
     ////////////////////////////////////////////////////////////////////легенда
     const legendXChange = legendX === 0 ? widthChart - paddingRight : legendX;
+    if (legendIsVisible) {
+      const legendTable = canvas
+        .append("g")
+        .attr("class", "legendTable")
+        .attr("transform", "translate(" + legendXChange + "," + legendY + ")");
 
-    const legendTable = canvas
-      .append("g")
-      .attr("class", "legendTable")
-      .attr("transform", "translate(" + legendXChange + "," + legendY + ")");
+      const legend = legendTable
+        .selectAll(".legend")
+        .data(arrayOfDifferentType)
+        .enter()
+        .append("g")
+        .attr("class", "legend")
+        .attr("transform", function (d, i) {
+          return "translate(0," + i * 15 + ")";
+        });
 
-    const legend = legendTable
-      .selectAll(".legend")
-      .data(arrayOfDifferentType)
-      .enter()
-      .append("g")
-      .attr("class", "legend")
-      .attr("transform", function (d, i) {
-        return "translate(0," + i * 15 + ")";
-      });
+      legend
+        .append("rect")
+        .attr("x", 1)
+        .attr("y", 1)
+        .attr("height", 10)
+        .attr("width", 10)
+        .attr("fill", (d) => colorScale(d))
+        .attr("class", "legend__rect-item");
 
-    legend
-      .append("rect")
-      .attr("x", 1)
-      .attr("y", 1)
-      .attr("height", 10)
-      .attr("width", 10)
-      .attr("fill", (d) => colorScale(d))
-      .attr("class", "legend__rect-item");
-
-    legend
-      .append("text")
-      .attr("x", 12)
-      .attr("y", 10)
-      .attr("height", 10)
-      .attr("width", 10)
-      .text((d) => d)
-      .attr("class", "legend__text-item");
-
+      legend
+        .append("text")
+        .attr("x", 12)
+        .attr("y", 10)
+        .attr("height", 10)
+        .attr("width", 10)
+        .text((d) => d)
+        .attr("class", "legend__text-item");
+    }
     ///********************************************************************************** */
     /////////////////////горизонтальный режим////////////////////////////////////////////////////////////////////////
     if (orientation === "horizontal") {

@@ -1,4 +1,8 @@
-import { QueryFormData, supersetTheme, TimeseriesDataRecord } from '@superset-ui/core';
+import {
+  QueryFormData,
+  supersetTheme,
+  TimeseriesDataRecord,
+} from "@superset-ui/core";
 // import { ColorSchemeConfig } from '@superset-ui/core/lib/color/ColorScheme';
 
 export interface BarD3StylesProps {
@@ -21,27 +25,29 @@ export type BarD3Props = BarD3StylesProps &
     data: TimeseriesDataRecord[];
     cols: string[];
     metrics: string[];
-    hoverColor: string,
-    labelColor: string,
-    limitColor: string,
-    labelPosition: string,
-    labelForStackedPosition: string,
-    labelFontSize: number,
-    xAxisFontSize: number,
-    yAxisFontSize: number,
-    xLimitLine: number,
-    paddingForChart: string,
-    paddingRight : number,
-    paddingLeft: number,
-    paddingTop: number,
-    paddingBottom: number,
-    paddingInfoLabel: number,
-    legendX: number,
-    legendY: number,
-    orientation: string,
-    visualGroupMode: string,
-    colorScheme:string,
-    paddingStackedGroup: number,
-    paddingStackedGroupLevelTwo:number,
+    hoverColor: string;
+    labelColor: string;
+    limitColor: string;
+    labelPosition: string;
+    labelForStackedPosition: string;
+    labelFontSize: number;
+    xAxisFontSize: number;
+    yAxisFontSize: number;
+    xLimitLine: number;
+    paddingForChart: string;
+    paddingRight: number;
+    paddingLeft: number;
+    paddingTop: number;
+    paddingBottom: number;
+    paddingInfoLabel: number;
+    legendX: number;
+    legendY: number;
+    legendIsVisible: boolean;
+    sorting: string;
+    orientation: string;
+    visualGroupMode: string;
+    colorScheme: string;
+    paddingStackedGroup: number;
+    paddingStackedGroupLevelTwo: number;
     // add typing here for the props you pass in from transformProps.ts!
   };

@@ -1,5 +1,9 @@
-import { t, validateNonEmpty } from '@superset-ui/core';
-import { ControlPanelConfig, sections, sharedControls } from '@superset-ui/chart-controls';
+import { t, validateNonEmpty } from "@superset-ui/core";
+import {
+  ControlPanelConfig,
+  sections,
+  sharedControls,
+} from "@superset-ui/chart-controls";
 
 const config: ControlPanelConfig = {
   /**
@@ -129,80 +133,98 @@ For more control input types, check out the `incubator-superset` repo
   controlPanelSections: [
     sections.legacyRegularTime,
     {
-      label: t('Запрос'),
+      label: t("Запрос"),
       expanded: true,
       controlSetRows: [
         [
           {
-            name: 'cols',
+            name: "cols",
             config: {
               ...sharedControls.groupby,
-              label: t('Столбцы'),
-              description: t('Столбцы для группировки'),
+              label: t("Столбцы"),
+              description: t("Столбцы для группировки"),
             },
           },
         ],
         [
           {
-            name: 'metrics',
+            name: "metrics",
             config: {
               ...sharedControls.metrics,
-              label: t('Метрики'),
+              label: t("Метрики"),
               // it's possible to add validators to controls if
               // certain selections/types need to be enforced
               validators: [validateNonEmpty],
             },
           },
         ],
-        ['adhoc_filters'],
+        ["adhoc_filters"],
         [
           {
-            name: 'row_limit',
-            config: {...sharedControls.row_limit,
-              label: t('Ограничение для количества строк'),}
+            name: "row_limit",
+            config: {
+              ...sharedControls.row_limit,
+              label: t("Ограничение для количества строк"),
+            },
           },
         ],
       ],
     },
     {
-      label: t('Настройки внешнего вида'),
+      label: t("Настройки внешнего вида"),
       expanded: true,
       controlSetRows: [
         [
           {
-            name: 'orientation',
+            name: "orientation",
             config: {
-              type: 'SelectControl',
-              label: t('Вид графика'),
-              default: '',
+              type: "SelectControl",
+              label: t("Вид графика"),
+              default: "",
               choices: [
                 // [value, label]
-                ['horizontal', 'Горизонтальный'],
-                ['vertical', 'Вертикальный']
+                ["horizontal", "Горизонтальный"],
+                ["vertical", "Вертикальный"],
               ],
               renderTrigger: true,
-              description: t('Вид графика'),
+              description: t("Вид графика"),
             },
           },
         ],
-        ['color_scheme'],
         [
           {
-            name: 'visualGroupMode',
+            name: "sorting",
             config: {
-              type: 'SelectControl',
-              label: t('Вид группировки'),
-              default: '',
+              type: "SelectControl",
+              label: t("Сортировка"),
+              default: "",
               choices: [
                 // [value, label]
-                ['group', 'По группам'],
-                ['stacked', 'Сложенный']
+                ["ascending", "По возрастанию"],
+                ["descending", "По убыванию"],
               ],
               renderTrigger: true,
-              description: t('Вид группировки'),
+              description: t("Сортировка"),
             },
           },
-          
+        ],
+        ["color_scheme"],
+        [
+          {
+            name: "visualGroupMode",
+            config: {
+              type: "SelectControl",
+              label: t("Вид группировки"),
+              default: "",
+              choices: [
+                // [value, label]
+                ["group", "По группам"],
+                ["stacked", "Сложенный"],
+              ],
+              renderTrigger: true,
+              description: t("Вид группировки"),
+            },
+          },
         ],
         /* [
           {
@@ -223,142 +245,142 @@ For more control input types, check out the `incubator-superset` repo
         ], */
         [
           {
-            name: 'labelPosition',
+            name: "labelPosition",
             config: {
-              type: 'SelectControl',
-              label: t('Отображение значений'),
-              default: 'В конце',
+              type: "SelectControl",
+              label: t("Отображение значений"),
+              default: "В конце",
               choices: [
                 // [value, label]
-                ['start', 'В начале'],
-                ['middle', 'В центре'],
-                ['end', 'В конце'],
-                ['none', 'Не отображать']
+                ["start", "В начале"],
+                ["middle", "В центре"],
+                ["end", "В конце"],
+                ["none", "Не отображать"],
               ],
               renderTrigger: true,
-              description: t('Расположение значений'),
+              description: t("Расположение значений"),
             },
           },
         ],
         [
           {
-            name: 'xLimitLine',
+            name: "xLimitLine",
             config: {
-              type: 'TextControl',
+              type: "TextControl",
               default: 50,
               renderTrigger: true,
               // ^ this makes it apply instantaneously, without triggering a "run query" button
-              label: t('Пороговое значение'),
-              description: t('Пороговое значение'),
+              label: t("Пороговое значение"),
+              description: t("Пороговое значение"),
             },
           },
         ],
       ],
     },
     {
-      label: t('Шрифты'),
+      label: t("Шрифты"),
       expanded: true,
       controlSetRows: [
         [
           {
-            name: 'labelFontSize',
+            name: "labelFontSize",
             config: {
-              type: 'TextControl',
+              type: "TextControl",
               default: 12,
               renderTrigger: true,
               // ^ this makes it apply instantaneously, without triggering a "run query" button
-              label: t('Значения на графике'),
-              description: t('Размер шрифта значений'),
+              label: t("Значения на графике"),
+              description: t("Размер шрифта значений"),
             },
           },
         ],
         [
           {
-            name: 'xAxisFontSize',
+            name: "xAxisFontSize",
             config: {
-              type: 'TextControl',
+              type: "TextControl",
               default: 12,
               renderTrigger: true,
               // ^ this makes it apply instantaneously, without triggering a "run query" button
-              label: t('Шкала Х'),
-              description: t('Размер шрифта шкалы Х'),
+              label: t("Ось Х"),
+              description: t("Размер шрифта на оси Х"),
             },
           },
         ],
         [
           {
-            name: 'yAxisFontSize',
+            name: "yAxisFontSize",
             config: {
-              type: 'TextControl',
+              type: "TextControl",
               default: 12,
               renderTrigger: true,
               // ^ this makes it apply instantaneously, without triggering a "run query" button
-              label: t('Шкала У'),
-              description: t('Размер шрифта шкалы У'),
+              label: t("Ось У"),
+              description: t("Размер шрифта на оси У"),
             },
           },
         ],
       ],
     },
     {
-      label: t('Отступы'),
+      label: t("Отступы"),
       expanded: true,
       controlSetRows: [
         [
           {
-            name: 'paddingRight',
+            name: "paddingRight",
             config: {
-              type: 'TextControl',
+              type: "TextControl",
               default: 40,
               renderTrigger: true,
               // ^ this makes it apply instantaneously, without triggering a "run query" button
-              label: t('Cправа'),
+              label: t("Cправа"),
               //description: t('Измените при необходимости '),
             },
           },
           {
-            name: 'paddingLeft',
+            name: "paddingLeft",
             config: {
-              type: 'TextControl',
+              type: "TextControl",
               default: 40,
               renderTrigger: true,
               // ^ this makes it apply instantaneously, without triggering a "run query" button
-              label: t('Cлева'),
+              label: t("Cлева"),
               //description: t('Пороговое значение'),
             },
           },
           {
-            name: 'paddingTop',
+            name: "paddingTop",
             config: {
-              type: 'TextControl',
+              type: "TextControl",
               default: 0,
               renderTrigger: true,
               // ^ this makes it apply instantaneously, without triggering a "run query" button
-              label: t('Cверху'),
+              label: t("Cверху"),
               //description: t('Пороговое значение'),
             },
           },
           {
-            name: 'paddingBottom',
+            name: "paddingBottom",
             config: {
-              type: 'TextControl',
+              type: "TextControl",
               default: 40,
               renderTrigger: true,
               // ^ this makes it apply instantaneously, without triggering a "run query" button
-              label: t('Cнизу'),
+              label: t("Cнизу"),
               //description: t('Пороговое значение'),
             },
           },
         ],
         [
           {
-            name: 'paddingInfoLabel',
+            name: "paddingInfoLabel",
             config: {
-              type: 'TextControl',
+              type: "TextControl",
               default: 10,
               renderTrigger: true,
               // ^ this makes it apply instantaneously, without triggering a "run query" button
-              label: t('Отступ подписей от оси У'),
+              label: t("Отступ подписей от оси У"),
               //description: t('Пороговое значение'),
             },
           },
@@ -366,40 +388,49 @@ For more control input types, check out the `incubator-superset` repo
       ],
     },
     {
-      label: t('Легенда'),
+      label: t("Легенда"),
       expanded: true,
       controlSetRows: [
         [
           {
-            name: 'legendX',
+            name: "legendIsVisible",
             config: {
-              type: 'TextControl',
+              type: "CheckboxControl",
+              label: t("Отображать легенду"),
+              default: true,
+              renderTrigger: true,
+            },
+          },
+          {
+            name: "legendX",
+            config: {
+              type: "TextControl",
               //default: 50,
               renderTrigger: true,
               // ^ this makes it apply instantaneously, without triggering a "run query" button
-              label: t('Позиция по оси Х'),
-              description: t('Положение крайней левой точки'),
+              label: t("Позиция по оси Х"),
+              description: t("Положение крайней левой точки"),
+              visibility: ({ controls }) =>
+                Boolean(controls?.legendIsVisible?.value),
             },
           },
 
           {
-            name: 'legendY',
+            name: "legendY",
             config: {
-              type: 'TextControl',
+              type: "TextControl",
               //default: 5,
               renderTrigger: true,
               // ^ this makes it apply instantaneously, without triggering a "run query" button
-              label: t('Позиция по оси У'),
-              description: t('Положение крайней левой точки'),
+              label: t("Позиция по оси У"),
+              description: t("Положение крайней левой точки"),
+              visibility: ({ controls }) =>
+                Boolean(controls?.legendIsVisible?.value),
             },
           },
         ],
       ],
     },
-    
-        
- 
-      
   ],
 };
 

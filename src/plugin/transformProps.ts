@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ChartProps, TimeseriesDataRecord } from '@superset-ui/core';
+import { ChartProps, TimeseriesDataRecord } from "@superset-ui/core";
 
 export default function transformProps(chartProps: ChartProps) {
   /**
@@ -49,8 +49,14 @@ export default function transformProps(chartProps: ChartProps) {
    * function during development with hot reloading, changes won't
    * be seen until restarting the development server.
    */
-  const { width, height, formData, queriesData} = chartProps;
-  const { boldText, headerFontSize, headerText,cols,metrics,hoverColor,
+  const { width, height, formData, queriesData } = chartProps;
+  const {
+    boldText,
+    headerFontSize,
+    headerText,
+    cols,
+    metrics,
+    hoverColor,
     labelColor,
     limitColor,
     labelPosition,
@@ -71,12 +77,15 @@ export default function transformProps(chartProps: ChartProps) {
     sliceID,
     legendX,
     legendY,
+    legendIsVisible,
+    sorting,
     paddingStackedGroup,
-    paddingStackedGroupLevelTwo, } = formData;
+    paddingStackedGroupLevelTwo,
+  } = formData;
   const data = queriesData[0].data as TimeseriesDataRecord[];
 
-  console.log('formData via TransformProps.ts', formData);
-  console.log("colorScheme in TransformProps.ts",colorScheme)
+  console.log("formData via TransformProps.ts", formData);
+  console.log("colorScheme in TransformProps.ts", colorScheme);
   return {
     width,
     height,
@@ -108,6 +117,8 @@ export default function transformProps(chartProps: ChartProps) {
     sliceID,
     legendX,
     legendY,
+    legendIsVisible,
+    sorting,
     paddingStackedGroup,
     paddingStackedGroupLevelTwo,
   };
