@@ -79,6 +79,7 @@ export default function transformProps(chartProps: ChartProps) {
     legendY,
     legendIsVisible,
     sorting,
+    rectSize,
     paddingStackedGroup,
     paddingStackedGroupLevelTwo,
   } = formData;
@@ -119,6 +120,7 @@ export default function transformProps(chartProps: ChartProps) {
     legendY,
     legendIsVisible,
     sorting,
+    rectSize,
     paddingStackedGroup,
     paddingStackedGroupLevelTwo,
   };

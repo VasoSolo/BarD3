@@ -61,7 +61,7 @@ export default function BarD3(props: BarD3Props) {
     xLimitLine = 100,
     paddingRight = 40,
     paddingLeft = 40,
-    paddingTop = 0,
+    paddingTop = 15,
     paddingBottom = 40,
     paddingInfoLabel = 10,
     legendX = width - 40,
@@ -71,8 +71,10 @@ export default function BarD3(props: BarD3Props) {
     orientation,
     visualGroupMode,
     colorScheme,
+    rectSize = 90,
   } = props;
   const rootElem = createRef<HTMLDivElement>();
+
   //const rootElem = createRef();
   function createChart(element) {
     //const colorSets = [];
@@ -180,6 +182,7 @@ export default function BarD3(props: BarD3Props) {
     const padding = 0; // отступ между прямоугольниками
     const paddingStackedGroup = 10;
     const paddingStackedGroupLevelTwo = 10;
+    const rectSize100 = 100 - rectSize;
 
     let heightRect; // высота прямоугольника в горизонтальном режиме
     if (cols.length === 2) {
@@ -597,7 +600,7 @@ export default function BarD3(props: BarD3Props) {
           })
           .attr("opacity", "0.6")
           .attr("width", 0)
-          .attr("height", heightRect)
+          .attr("height", heightRect - heightRect * (rectSize100 / 100))
           .attr("y", (d, i) => {
             return heightRect * i;
           })
@@ -1015,7 +1018,7 @@ export default function BarD3(props: BarD3Props) {
             return colorScale(d[0]) + "";
           })
           .attr("opacity", "0.6")
-          .attr("width", widthRect)
+          .attr("width", widthRect - widthRect * (rectSize100 / 100))
           .attr("height", 0)
           .attr("x", (d, i) => {
             return widthRect * i;
@@ -1213,6 +1216,44 @@ export default function BarD3(props: BarD3Props) {
       .append("text")
       .attr("class", "tooltip")
       .attr("style", "position: absolute; opacity: 0;");
+
+    // const toolTipBlock = canvas.append("g").attr("class", "tooltipBlock");
+    // toolTipBlock
+    //   .selectAll("path")
+    //   .data([, ,])
+    //   .join("path")
+    //   .attr("fill", "Snow")
+    //   .attr("stroke", "DimGray")
+    //   .attr("class", "toolTipPath");
+    // toolTipBlock
+    //   .append("text")
+    //   .attr("style", "font-weight: bold;")
+    //   .attr("transform", "translate(5,25)")
+    //   .attr("class", "toolTipHeader");
+
+    // const tooltip = canvas
+    //   .append("g")
+    //   .attr("class", "tooltip")
+    //   .style("opacity", 0);
+
+    // tooltip
+    //   .append("rect")
+    //   .attr("class", "tooltip-bg")
+    //   .attr("width", 100)
+    //   .attr("height", 50)
+    //   .attr("rx", 5)
+    //   .attr("ry", 5)
+    //   .attr("fill", "#fff")
+    //   .attr("stroke", "#000")
+    //   .attr("stroke-width", 1);
+
+    // tooltip
+    //   .append("text")
+    //   .attr("class", "tooltip-text")
+    //   .attr("x", 10)
+    //   .attr("y", 25)
+    //   .text("test");
+
     d3.selectAll(".rectItem").on("mouseenter", function (el) {
       d3.select(this).transition().duration(300).attr("opacity", "1");
     });
@@ -1228,7 +1269,10 @@ export default function BarD3(props: BarD3Props) {
         d3.select(".tooltip").style("opacity", 0);
       })
       .on("mousemove", function (d) {
-        let res = d.path[0].__data__[0];
+        let res =
+          d.path[0].__data__[1][0][cols[0]] +
+          ": " +
+          d.path[0].__data__[1][0][metrica];
         if (d.path[2]?.__data__) {
           res = res + "   " + d.path[2].__data__[0];
         }

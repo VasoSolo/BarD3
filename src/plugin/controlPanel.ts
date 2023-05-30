@@ -190,6 +190,16 @@ For more control input types, check out the `incubator-superset` repo
               description: t("Вид графика"),
             },
           },
+          {
+            name: "rectSize",
+            config: {
+              type: "SliderControl",
+              default: 95,
+              renderTrigger: true,
+              label: t("Ширина столбцов"),
+              description: t("%"),
+            },
+          },
         ],
         [
           {
