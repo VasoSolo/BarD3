@@ -45,6 +45,7 @@ export type BarD3Props = BarD3StylesProps &
     legendIsVisible: boolean;
     sorting: string;
     rectSize: number;
+    limitIsVisible: boolean;
     orientation: string;
     visualGroupMode: string;
     colorScheme: string;

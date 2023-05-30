@@ -274,6 +274,15 @@ For more control input types, check out the `incubator-superset` repo
         ],
         [
           {
+            name: "limitIsVisible",
+            config: {
+              type: "CheckboxControl",
+              label: t("Отображать пороговое значение"),
+              default: false,
+              renderTrigger: true,
+            },
+          },
+          {
             name: "xLimitLine",
             config: {
               type: "TextControl",
@@ -282,6 +291,8 @@ For more control input types, check out the `incubator-superset` repo
               // ^ this makes it apply instantaneously, without triggering a "run query" button
               label: t("Пороговое значение"),
               description: t("Пороговое значение"),
+              visibility: ({ controls }) =>
+                Boolean(controls?.limitIsVisible?.value),
             },
           },
         ],

@@ -68,6 +68,7 @@ export default function BarD3(props: BarD3Props) {
     legendY = 5,
     legendIsVisible = true,
     sorting = "ascending",
+    limitIsVisible = false,
     orientation,
     visualGroupMode,
     colorScheme,
@@ -716,23 +717,25 @@ export default function BarD3(props: BarD3Props) {
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      const lineLimit = rects //пороговое значение
-        .append("line")
-        .attr("x1", widthScale(xLimitLine))
-        .attr("y1", 0)
-        .attr("x2", widthScale(xLimitLine))
-        .attr("y2", heightChart)
-        .attr("stroke-width", 4)
-        .attr("stroke", limitColor)
-        .attr("opacity", "0.15")
-        .attr("class", "lineLimit");
-      if (visualGroupMode === "stacked") {
-        console.log("stacked");
-        lineLimit
-          .attr("x1", widthStackedScale(xLimitLine))
+      if (limitIsVisible) {
+        const lineLimit = rects //пороговое значение
+          .append("line")
+          .attr("x1", widthScale(xLimitLine))
           .attr("y1", 0)
-          .attr("x2", widthStackedScale(xLimitLine))
-          .attr("y2", heightChart);
+          .attr("x2", widthScale(xLimitLine))
+          .attr("y2", heightChart)
+          .attr("stroke-width", 4)
+          .attr("stroke", limitColor)
+          .attr("opacity", "0.15")
+          .attr("class", "lineLimit");
+        if (visualGroupMode === "stacked") {
+          console.log("stacked");
+          lineLimit
+            .attr("x1", widthStackedScale(xLimitLine))
+            .attr("y1", 0)
+            .attr("x2", widthStackedScale(xLimitLine))
+            .attr("y2", heightChart);
+        }
       }
 
       ////////////////////////////////////////////////////////////////////////create label
@@ -1217,42 +1220,30 @@ export default function BarD3(props: BarD3Props) {
       .attr("class", "tooltip")
       .attr("style", "position: absolute; opacity: 0;");
 
-    // const toolTipBlock = canvas.append("g").attr("class", "tooltipBlock");
-    // toolTipBlock
-    //   .selectAll("path")
-    //   .data([, ,])
-    //   .join("path")
-    //   .attr("fill", "Snow")
-    //   .attr("stroke", "DimGray")
-    //   .attr("class", "toolTipPath");
-    // toolTipBlock
-    //   .append("text")
-    //   .attr("style", "font-weight: bold;")
-    //   .attr("transform", "translate(5,25)")
-    //   .attr("class", "toolTipHeader");
+    const tooltip_test = canvas
+      .append("g")
+      .attr("class", "tooltip_test")
+      .style("opacity", 0);
+    // .style("opacity", 0);
 
-    // const tooltip = canvas
-    //   .append("g")
-    //   .attr("class", "tooltip")
-    //   .style("opacity", 0);
+    const heightToolTip = 40;
+    const tooltip_bg = tooltip_test
+      .append("rect")
+      .attr("class", "tooltip-bg")
+      .attr("width", 100)
+      .attr("height", heightToolTip)
+      .attr("rx", 5)
+      .attr("ry", 5)
+      .attr("fill", "#fff")
+      .attr("stroke", "#000")
+      .attr("stroke-width", 1);
 
-    // tooltip
-    //   .append("rect")
-    //   .attr("class", "tooltip-bg")
-    //   .attr("width", 100)
-    //   .attr("height", 50)
-    //   .attr("rx", 5)
-    //   .attr("ry", 5)
-    //   .attr("fill", "#fff")
-    //   .attr("stroke", "#000")
-    //   .attr("stroke-width", 1);
-
-    // tooltip
-    //   .append("text")
-    //   .attr("class", "tooltip-text")
-    //   .attr("x", 10)
-    //   .attr("y", 25)
-    //   .text("test");
+    const tooltipText = tooltip_test
+      .append("text")
+      .attr("class", "tooltip-text")
+      .attr("x", 10)
+      .attr("y", 25)
+      .text("test");
 
     d3.selectAll(".rectItem").on("mouseenter", function (el) {
       d3.select(this).transition().duration(300).attr("opacity", "1");
@@ -1263,29 +1254,45 @@ export default function BarD3(props: BarD3Props) {
     });
     d3.selectAll(".rectItem")
       .on("mouseover", (d) => {
-        d3.select(".tooltip").style("opacity", 1);
+        d3.select(".tooltip_test").style("opacity", 1);
       })
       .on("mouseout", function (d) {
-        d3.select(".tooltip").style("opacity", 0);
+        d3.select(".tooltip_test").style("opacity", 0);
       })
-      .on("mousemove", function (d) {
-        let res =
-          d.path[0].__data__[1][0][cols[0]] +
-          ": " +
-          d.path[0].__data__[1][0][metrica];
-        if (d.path[2]?.__data__) {
-          res = res + "   " + d.path[2].__data__[0];
+      .on("mousemove", function (event, data) {
+        let res = data[1][0][cols[0]] + ": " + data[1][0][metrica];
+        if (event.path[2]?.__data__) {
+          res = res + "   " + event.path[2].__data__[0];
         }
-        if (d.path[3]?.__data__) {
-          res = res + "   " + d.path[3].__data__[0];
+        if (event.path[3]?.__data__) {
+          res = res + "   " + event.path[3].__data__[0];
         }
-        // console.log(d);
-        d3.select(".tooltip")
-          .attr(
-            "transform",
-            "translate(" + (d.offsetX + 15) + "," + (d.offsetY + 15) + ")"
-          )
-          .text(res);
+        const widthToolTip = tooltipText.node().getBBox().width + 30;
+        tooltipText.text(res);
+        tooltip_bg.attr("width", widthToolTip);
+
+        let toolTipHorizontalPosition: number;
+        let toolVertikalPosition: number;
+
+        if (d3.pointer(event)[0] > width / 2) {
+          toolTipHorizontalPosition = -widthToolTip - 5;
+        } else {
+          toolTipHorizontalPosition = 10;
+        }
+        if (d3.pointer(event)[1] > height / 2) {
+          toolVertikalPosition = -heightToolTip - 15;
+        } else {
+          toolVertikalPosition = 10;
+        }
+
+        d3.select(".tooltip_test").attr(
+          "transform",
+          "translate(" +
+            (event.offsetX + toolTipHorizontalPosition) +
+            "," +
+            (event.offsetY + toolVertikalPosition) +
+            ")"
+        );
       });
   }
 
